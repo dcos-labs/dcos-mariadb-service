@@ -70,9 +70,12 @@ public class MainScheduler implements Scheduler {
 
             log.info(String.format("accepted %s/%s offers", acceptedOffers.size(), offers.size()));
 
-            // @TODO housekeeping tasks: decline offers, process old task ops,
+            // @TODO housekeeping tasks: decline offers, garbage collect tasks, suppress offers (if needed)
             declineOffers(driver, acceptedOffers, offers);
             //taskKiller.process(driver);
+            if (!hasPendingOperations()) {
+                suppressOffers(driver);
+            }
 
         } catch (Exception e) {
             log.error("error occurred while processing offers", e);
@@ -138,5 +141,20 @@ public class MainScheduler implements Scheduler {
                 driver.declineOffer(offerId);
             }
         }
+    }
+
+    private boolean hasPendingOperations() {
+        // @TODO check if plan has pending operations
+        return true;
+    }
+
+    private void suppressOffers(SchedulerDriver driver) {
+        log.info("suppressing offers");
+        driver.suppressOffers();
+    }
+
+    private void reviveOffers(SchedulerDriver driver) {
+        log.info("reviving offers");
+        driver.reviveOffers();
     }
 }
