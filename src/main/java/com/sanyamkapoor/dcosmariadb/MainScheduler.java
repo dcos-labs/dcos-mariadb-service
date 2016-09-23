@@ -1,21 +1,42 @@
 package com.sanyamkapoor.dcosmariadb;
 
+// utils
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import com.google.protobuf.TextFormat;
+
+// mesos
 import org.apache.mesos.Protos;
 import org.apache.mesos.Scheduler;
 import org.apache.mesos.SchedulerDriver;
+
+// logging
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
+// dcos-commons
+import org.apache.mesos.offer.OfferAccepter;
+import org.apache.mesos.reconciliation.DefaultReconciler;
+import org.apache.mesos.reconciliation.Reconciler;
+//import org.apache.mesos.scheduler.TaskKiller;
+//import org.apache.mesos.scheduler.DefaultTaskKiller;
 
 public class MainScheduler implements Scheduler {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
 
+    // list of objects needed to handle tasks
+    private final Reconciler reconciler;
+    //private final DefaultTaskKiller taskKiller;
+    private final OfferAccepter offerAccepter;
+
     private Protos.FrameworkID frameworkId;
 
+    // @TODO construct base deployment plans
     public MainScheduler() {
-        // @TODO construct the pipeline of jobs
+        //taskKiller = new DefaultTaskKiller();
+        reconciler = new DefaultReconciler();
+        offerAccepter = null;
     }
 
     @Override
@@ -37,7 +58,25 @@ public class MainScheduler implements Scheduler {
 
     @Override
     public void resourceOffers(SchedulerDriver driver, List<Protos.Offer> offers) {
-        // @TODO evaluate resource offers against pending jobs
+        try {
+            logOffers(offers);
+
+            reconciler.reconcile(driver);
+
+            List<Protos.OfferID> acceptedOffers = new ArrayList<Protos.OfferID>();
+            if (reconciler.isReconciled()) {
+                // @TODO process new offers and jobs
+            }
+
+            log.info(String.format("accepted %s/%s offers", acceptedOffers.size(), offers.size()));
+
+            // @TODO housekeeping tasks: decline offers, process old task ops,
+            declineOffers(driver, acceptedOffers, offers);
+            //taskKiller.process(driver);
+
+        } catch (Exception e) {
+            log.error("error occurred while processing offers", e);
+        }
     }
 
     @Override
@@ -81,5 +120,23 @@ public class MainScheduler implements Scheduler {
     @Override
     public void error(SchedulerDriver driver, String message) {
         log.error("scheduler driver error: " + message);
+    }
+
+    private void logOffers(List<Protos.Offer> offers) {
+        log.info(String.format("received %s offers", offers.size()));
+        for (Protos.Offer offer : offers) {
+            log.debug("received offer " + TextFormat.shortDebugString(offer));
+        }
+    }
+
+    private void declineOffers(SchedulerDriver driver, List<Protos.OfferID> acceptedOffers, List<Protos.Offer> offers) {
+        log.info(String.format("declining %s offers", offers.size() - acceptedOffers.size()));
+        for (Protos.Offer offer : offers) {
+            Protos.OfferID offerId = offer.getId();
+            if (!acceptedOffers.contains(offerId)) {
+                log.debug("declining offer, OfferID: " + offerId.getValue());
+                driver.declineOffer(offerId);
+            }
+        }
     }
 }
