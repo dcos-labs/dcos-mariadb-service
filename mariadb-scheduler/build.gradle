@@ -1,0 +1,12 @@
+group 'com.sanyamkapoor.mariadb'
+version '0.1.0'
+
+apply plugin: 'java'
+
+distributions {
+    main {
+        baseName = 'mariadb-scheduler'
+    }
+}
+
+mainClassName = 'com.sanyamkapoor.mariadb.Main'

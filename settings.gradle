@@ -1,2 +1,2 @@
 rootProject.name = 'dcos-mariadb-service'
-
+include 'mariadb-scheduler'

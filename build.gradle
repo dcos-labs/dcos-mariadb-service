@@ -1,32 +1,44 @@
-plugins {
-    id 'java'
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
+group 'com.sanyamkapoor.mariadb'
+version '0.1.0'
+
+apply plugin: 'java'
+
+ext {
+    mesosVersion = "1.0.1"
+    dcosSdkVersion = "0.7.10-SNAPSHOT"
+    slf4jVersion = "1.7.+"
+    logbackVersion = "1.1+"
+
+    junitVersion = "4.12"
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        url "http://downloads.mesosphere.com/maven/"
+subprojects {
+    apply plugin: 'application'
+
+    repositories {
+        mavenCentral()
+        maven {
+            url "http://downloads.mesosphere.com/maven/"
+        }
+        maven {
+            url "https://downloads.mesosphere.com/maven-snapshot/"
+        }
+    }
+
+    dependencies {
+        compile (
+            "org.apache.mesos:mesos:${mesosVersion}",
+            "mesosphere:dcos-commons:${dcosSdkVersion}",
+            "org.slf4j:slf4j-api:${slf4jVersion}",
+            "ch.qos.logback:logback-classic:${logbackVersion}"
+        )
+
+        testCompile (
+            "junit:junit:${junitVersion}"
+        )
     }
 }
 
-dependencies {
-    compile (
-        'org.apache.mesos:mesos:1.0.1',
-        'com.beust:jcommander:1.48',
-        'mesosphere:dcos-commons:0.3.+',
-        'org.slf4j:slf4j-api:1.7.+',
-        'ch.qos.logback:logback-classic:1.1.+'
-    )
-
-    testCompile (
-        'junit:junit:4.12'
-    )
-}
-
-version = '0.1.0'
-jar {
-    manifest {
-        attributes 'Main-Class': 'com.sanyamkapoor.dcosmariadb.Main'
-    }
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
 }
