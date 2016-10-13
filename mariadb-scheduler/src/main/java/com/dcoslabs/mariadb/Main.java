@@ -1,12 +1,11 @@
-package com.sanyamkapoor.mariadb;
+package com.dcoslabs.mariadb;
 
+import com.dcoslabs.mariadb.specification.MariaDbServiceSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.mesos.scheduler.SchedulerUtils;
 import org.apache.mesos.specification.DefaultService;
-
-import com.sanyamkapoor.mariadb.specification.MariaDbServiceSpecification;
 
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -19,6 +18,6 @@ public class Main {
 
     public static void main(String[] args) {
         logger.info(String.format("starting %s scheduler with args %s", SERVICE_NAME, args));
-        new DefaultService(API_PORT).register(new MariaDbServiceSpecification(SERVICE_NAME));
+        new DefaultService(API_PORT).register(new MariaDbServiceSpecification(SERVICE_NAME, ROLE, PRINCIPAL));
     }
 }

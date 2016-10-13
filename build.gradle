@@ -1,11 +1,16 @@
-group 'com.sanyamkapoor.mariadb'
-version '0.1.0'
-
 apply plugin: 'java'
+
+allprojects {
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+
+    group = 'com.dcoslabs.mariadb'
+    version = '0.1.0'
+}
 
 ext {
     mesosVersion = "1.0.1"
-    dcosSdkVersion = "0.7.10-SNAPSHOT"
+    dcosSdkVersion = "0.8.0-SNAPSHOT"
     slf4jVersion = "1.7.+"
     logbackVersion = "1.1+"
 

@@ -1,4 +1,4 @@
-package com.sanyamkapoor.mariadb.config;
+package com.dcoslabs.mariadb.config;
 
 //import com.beust.jcommander.Parameter;
 

@@ -1,4 +1,4 @@
-group 'com.sanyamkapoor.mariadb'
+group 'com.dcoslabs.mariadb'
 version '0.1.0'
 
 apply plugin: 'java'
@@ -9,4 +9,4 @@ distributions {
     }
 }
 
-mainClassName = 'com.sanyamkapoor.mariadb.Main'
+mainClassName = 'com.dcoslabs.mariadb.Main'
